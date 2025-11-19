@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import UsersTab from './components/UsersTab';
+import ReferralsTab from './components/ReferralsTab';
+import HealthStatus from './components/HealthStatus';
+import { Users, UserPlus } from 'lucide-react';
+import UserTabs from './components/UserTabs';
 
 function App() {
+  const [activeTab, setActiveTab] = useState<'users' | 'referrals'>('users');
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header className="header">
+        <div className="container">
+          <div className="header-content">
+            <h1 className="title">Markwave Dashboard</h1>
+            <HealthStatus />
+          </div>
+        </div>
       </header>
+
+      <UserTabs />
+
+      <main className="container" style={{ padding: '2rem 1rem' }}>
+        {activeTab === 'users' ? <UsersTab /> : <ReferralsTab />}
+      </main>
     </div>
   );
 }
