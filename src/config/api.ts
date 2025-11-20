@@ -1,7 +1,7 @@
 export const API_CONFIG = {
   getBaseUrl: () => {
     // Check if we're running in production/Cloud Run vs local development
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (process.env.NODE_ENV === 'development') {
       return 'http://localhost:8000';
     } else {
       return 'https://markwave-admin-dasboard-couipk45fa-ew.a.run.app';
