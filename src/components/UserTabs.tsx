@@ -101,20 +101,22 @@ const UserTabs: React.FC = () => {
                   <tr>
                     <th>Name</th>
                     <th>Mobile</th>
-                    <th>Verified</th>
+                    <th>Referred By</th>
+                    <th>Referrer Mobile</th>
                   </tr>
                 </thead>
                 <tbody>
                   {referralUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={3} style={{ textAlign: 'center', color: '#888' }}>No users found</td>
+                      <td colSpan={4} style={{ textAlign: 'center', color: '#888' }}>No users found</td>
                     </tr>
                   ) : (
                     referralUsers.map((user: any, index: number) => (
                       <tr key={index}>
-                        <td>{user.name}</td>
+                        <td>{user.first_name} {user.last_name}</td>
                         <td>{user.mobile}</td>
-                        <td>{user.verified ? 'Yes' : 'No'}</td>
+                        <td>{user.refered_by_name || '-'}</td>
+                        <td>{user.refered_by_mobile || '-'}</td>
                       </tr>
                     ))
                   )}
@@ -130,21 +132,29 @@ const UserTabs: React.FC = () => {
               <table className="user-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
                     <th>Mobile</th>
+                    <th>Form Filled</th>
+                    <th>Referred By</th>
+                    <th>Referrer Mobile</th>
                     <th>Verified</th>
                   </tr>
                 </thead>
                 <tbody>
                   {existingCustomers.length === 0 ? (
                     <tr>
-                      <td colSpan={3} style={{ textAlign: 'center', color: '#888' }}>No users found</td>
+                      <td colSpan={7} style={{ textAlign: 'center', color: '#888' }}>No users found</td>
                     </tr>
                   ) : (
                     existingCustomers.map((user: any, index: number) => (
                       <tr key={index}>
-                        <td>{user.name}</td>
+                        <td>{user.first_name || '-'}</td>
+                        <td>{user.last_name || '-'}</td>
                         <td>{user.mobile}</td>
+                        <td>{user.isFormFilled ? 'Yes' : 'No'}</td>
+                        <td>{user.refered_by_name || '-'}</td>
+                        <td>{user.refered_by_mobile || '-'}</td>
                         <td>{user.verified ? 'Yes' : 'No'}</td>
                       </tr>
                     ))

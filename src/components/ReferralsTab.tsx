@@ -123,7 +123,7 @@ const ReferralsTab: React.FC = () => {
               {referrals.map((user, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {user.name}
+                    {user.first_name} {user.last_name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {user.mobile}

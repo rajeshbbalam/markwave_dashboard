@@ -1,9 +1,14 @@
 export interface User {
   id?: string;
   mobile: string;
-  name: string;
-  verified: boolean;
-  referral_type: string;
+  name?: string; // Keep for backward compatibility
+  first_name?: string;
+  last_name?: string;
+  verified?: boolean;
+  referral_type?: string;
+  refered_by_name?: string;
+  refered_by_mobile?: string;
+  isFormFilled?: boolean;
   email?: string;
   address?: string;
   phone?: string;

@@ -88,7 +88,7 @@ const UsersTab: React.FC = () => {
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {users.map((user, index) => (
           <li key={index} style={{ marginBottom: '1.5rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '1.25rem' }}>
-            <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.5rem' }}>{user.name}</div>
+            <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: '0.5rem' }}>{user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim()}</div>
             <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>Mobile: {user.mobile}</div>
             <div style={{ color: user.verified ? '#16a34a' : '#92400e', fontWeight: 500, marginBottom: '0.5rem' }}>
               Status: {user.verified ? 'Verified' : 'Pending'}
