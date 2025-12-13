@@ -25,5 +25,6 @@ export const API_ENDPOINTS = {
   verifyUser: () => `${API_CONFIG.getBaseUrl()}/users/verify`,
   updateUser: (mobile: string) => `${API_CONFIG.getBaseUrl()}/users/${mobile}`,
   getProducts: () => `${API_CONFIG.getBaseUrl()}/products`,
-  health: () => `${API_CONFIG.getBaseUrl()}/health`
+  health: () => `${API_CONFIG.getBaseUrl()}/health`,
+  getPendingUnits: () => `${API_CONFIG.getBaseUrl()}/purchases/admin/units/pending`,
 };

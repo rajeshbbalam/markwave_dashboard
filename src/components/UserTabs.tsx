@@ -4,6 +4,10 @@ import BuffaloTree from './BuffaloTree';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
 
+interface UserTabsProps {
+  adminMobile: string;
+}
+
 // Product Image Carousel Component
 const ProductImageCarousel: React.FC<{ images: string[], breed: string, inStock: boolean }> = ({ images, breed, inStock }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -126,8 +130,8 @@ const ProductImageCarousel: React.FC<{ images: string[], breed: string, inStock:
   );
 };
 
-const UserTabs: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'nonVerified' | 'existing' | 'tree' | 'products'>('nonVerified');
+const UserTabs: React.FC<UserTabsProps> = ({ adminMobile }) => {
+  const [activeTab, setActiveTab] = useState<'orders' | 'nonVerified' | 'existing' | 'tree' | 'products'>('orders');
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -149,6 +153,8 @@ const UserTabs: React.FC = () => {
   const [referralUsers, setReferralUsers] = useState<any[]>([]);
   const [existingCustomers, setExistingCustomers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [pendingUnits, setPendingUnits] = useState<any[]>([]);
+  const [ordersError, setOrdersError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReferralUsers = async () => {
@@ -157,6 +163,39 @@ const UserTabs: React.FC = () => {
         setReferralUsers(response.data.users || []);
       } catch (error) {
         setReferralUsers([]); // Clear users on error
+      }
+    };
+
+    const fetchPendingUnits = async () => {
+      try {
+        setOrdersError(null);
+        const response = await axios.get(API_ENDPOINTS.getPendingUnits(), {
+          headers: {
+            'X-Admin-Mobile': adminMobile,
+          },
+        });
+        const units = response.data?.units || [];
+        setPendingUnits(units);
+      } catch (error: any) {
+        console.error('Error fetching pending units:', error);
+        const rawDetail = error?.response?.data?.detail;
+        let msg: string;
+        if (typeof rawDetail === 'string') {
+          msg = rawDetail;
+        } else if (Array.isArray(rawDetail)) {
+          const first = rawDetail[0];
+          if (first && typeof first === 'object' && 'msg' in first) {
+            msg = String(first.msg);
+          } else {
+            msg = 'Failed to load orders';
+          }
+        } else if (rawDetail && typeof rawDetail === 'object' && 'msg' in rawDetail) {
+          msg = String(rawDetail.msg);
+        } else {
+          msg = 'Failed to load orders';
+        }
+        setOrdersError(msg);
+        setPendingUnits([]);
       }
     };
 
@@ -182,7 +221,9 @@ const UserTabs: React.FC = () => {
     };
 
     // Only fetch data for the user-related tabs. The 'tree' tab is client-side.
-    if (activeTab === 'nonVerified') {
+    if (activeTab === 'orders') {
+      fetchPendingUnits();
+    } else if (activeTab === 'nonVerified') {
       fetchReferralUsers();
     } else if (activeTab === 'existing') {
       fetchExistingCustomers();
@@ -348,6 +389,12 @@ const UserTabs: React.FC = () => {
     <div>
       <div className="tabs">
         <button
+          className={activeTab === 'orders' ? 'active' : ''}
+          onClick={() => setActiveTab('orders')}
+        >
+          Orders
+        </button>
+        <button
           className={activeTab === 'nonVerified' ? 'active' : ''}
           onClick={() => setActiveTab('nonVerified')}
         >
@@ -374,7 +421,56 @@ const UserTabs: React.FC = () => {
       </div>
 
       <div className="tab-content">
-        {activeTab === 'nonVerified' ? (
+        {activeTab === 'orders' ? (
+          <div>
+            <h2>Live Orders (Pending Approval)</h2>
+            {ordersError && (
+              <div style={{ marginBottom: '0.75rem', color: '#dc2626' }}>{ordersError}</div>
+            )}
+            <div className="table-container">
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>Unit ID</th>
+                    <th>User Mobile</th>
+                    <th>Buffalo ID</th>
+                    <th>Units</th>
+                    <th>Amount</th>
+                    <th>Payment Type</th>
+                    <th>Lat</th>
+                    <th>Lng</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingUnits.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} style={{ textAlign: 'center', color: '#888' }}>No pending orders</td>
+                    </tr>
+                  ) : (
+                    pendingUnits.map((entry: any, index: number) => {
+                      const unit = entry.unit || {};
+                      const tx = entry.transaction || {};
+                      return (
+                        <tr key={unit.id || index}>
+                          <td>{unit.id}</td>
+                          <td>{unit.userId}</td>
+                          <td>{unit.buffaloId}</td>
+                          <td>{unit.numUnits}</td>
+                          <td>{tx.amount ?? '-'}</td>
+                          <td>{tx.paymentType || '-'}</td>
+                          <td>{unit.lat ?? '-'}</td>
+                          <td>{unit.lng ?? '-'}</td>
+                          <td>{unit.paymentStatus || '-'}</td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : activeTab === 'nonVerified' ? (
           <div>
             <h2>Referrals</h2>
             <div className="table-container">
